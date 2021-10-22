@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "=2.46.0"
     }
+    azuread = {
+      source = "hashicorp/azuread"
+      version = "=2.7.0"
+    }
   }
   backend "azurerm" {
     resource_group_name  = "terraform_state"
@@ -16,3 +20,5 @@ terraform {
 provider "azurerm" {
   features {}
 }
+
+provider "azuread" {}
