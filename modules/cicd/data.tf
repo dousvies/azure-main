@@ -1,6 +1,8 @@
 data "azurerm_subscription" "current" {}
-data "azuread_client_config" "current" {}
 data "azurerm_client_config" "current" {}
+data "azuread_user" "owner" {
+  user_principal_name = "thralonso_outlook.com#EXT#@thralonsooutlook.onmicrosoft.com"
+}
 
 data "azurerm_image" "image" {
   name                = "${var.image_name}_${var.image_version}"

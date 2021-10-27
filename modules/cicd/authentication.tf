@@ -23,7 +23,17 @@ resource "azurerm_key_vault" "cicd" {
   sku_name                    = "standard"
 
   access_policy {
-    object_id = azuread_service_principal.cicd.object_id
+    tenant_id = data.azurerm_client_config.current.tenant_id
+    object_id = data.azuread_user.owner.object_id
+    secret_permissions = [
+      "get",
+      "set",
+      "list",
+    ]
+  }
+
+  access_policy {
+    object_id = azuread_service_principal.cicd.id
     tenant_id = azuread_service_principal.cicd.application_tenant_id
     secret_permissions = [
       "get",
@@ -33,12 +43,12 @@ resource "azurerm_key_vault" "cicd" {
 
 resource "azuread_application" "cicd" {
   display_name = var.app_name
-  owners       = [data.azuread_client_config.current.object_id]
+  owners       = [data.azuread_user.owner.object_id]
 }
 
 resource "azuread_service_principal" "cicd" {
   application_id               = azuread_application.cicd.application_id
-  owners                       = [data.azuread_client_config.current.object_id]
+  owners                       = [data.azuread_user.owner.object_id]
   app_role_assignment_required = false
 }
 

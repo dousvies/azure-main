@@ -20,6 +20,10 @@ resource "azurerm_storage_container" "terraform-state" {
 
 data "azurerm_client_config" "current" {}
 
+data "azuread_user" "owner" {
+  user_principal_name = "thralonso_outlook.com#EXT#@thralonsooutlook.onmicrosoft.com"
+}
+
 resource "azurerm_key_vault" "terraform-state" {
   name                        = "terraformstatethralonso"
   location                    = azurerm_resource_group.terraform-state.location
@@ -32,13 +36,14 @@ resource "azurerm_key_vault" "terraform-state" {
 
   access_policy {
     tenant_id = data.azurerm_client_config.current.tenant_id
-    object_id = data.azurerm_client_config.current.object_id
+    object_id = data.azuread_user.owner.object_id
     key_permissions = [
       "get",
     ]
     secret_permissions = [
       "get",
       "set",
+      "list",
     ]
     storage_permissions = [
       "get",
