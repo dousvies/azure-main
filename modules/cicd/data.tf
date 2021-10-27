@@ -3,7 +3,7 @@ data "azuread_client_config" "current" {}
 data "azurerm_client_config" "current" {}
 
 data "azurerm_image" "image" {
-  name                = var.image_name
+  name                = "${var.image_name}_${var.image_version}"
   resource_group_name = azurerm_resource_group.cicd.name
 }
 

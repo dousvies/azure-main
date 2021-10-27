@@ -1,0 +1,24 @@
+name: infra-azure-main
+trigger:
+  tags:
+    include:
+    - '*'
+  branches:
+    exclude:
+    - '*'
+pool: selfhostedlinux
+variables:
+- group: ci-auth
+stages:
+- stage: Plan
+  jobs:
+    - job: plan
+      displayName: Plan Infrastructure
+      container: dousvies/ci-terraform:azure
+      steps:
+      - bash: |
+          export TF_VAR_client_id=$(client_id)
+          export TF_VAR_client_secret=$(client_secret)
+          export TF_VAR_subscription_id=$(subscription_id)
+          export TF_VAR_tenant_id=$(tenant_id)
+          terraform plan -out=tfplan

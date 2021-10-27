@@ -11,6 +11,6 @@ az login --service-principal -u "${client_id}" -p "${client_secret}" --tenant "$
 PERSONAL_ACCESS_TOKEN=$(az keyvault secret show --name cicdpersonalaccesstoken --vault-name cicdthralonso --query value -o tsv)
 ID=$(gpw 1 8)
 cd /home/ubuntu/agent-config/
-sudo -H -u ubuntu bash -c './config.sh --unattended --url https://dev.azure.com/thralonso --auth pat --token $0 --pool custom_ubuntu --agent ubuntuxxx$1' $PERSONAL_ACCESS_TOKEN $ID
+sudo -H -u ubuntu bash -c './config.sh --unattended --url https://dev.azure.com/thralonso --auth pat --token $0 --pool selfhostedlinux --agent ubuntu1804$1' $PERSONAL_ACCESS_TOKEN $ID
 ./svc.sh install
-systemctl start "vsts.agent.thralonso.custom_ubuntu.ubuntuxxx$ID.service"
+systemctl start "vsts.agent.thralonso.selfhostedlinux.ubuntu1804$ID.service"
