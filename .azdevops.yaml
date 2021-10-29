@@ -51,5 +51,4 @@ stages:
             export ARM_SUBSCRIPTION_ID=$(subscription_id)
             export ARM_TENANT_ID=$(tenant_id)
             terraform init
-            ls -la
-            terraform apply ./tfplan
+            terraform apply ../tfplan
