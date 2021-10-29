@@ -51,4 +51,5 @@ stages:
             export ARM_SUBSCRIPTION_ID=$(subscription_id)
             export ARM_TENANT_ID=$(tenant_id)
             terraform init
-            terraform apply $(System.DefaultWorkingDirectory)/tfplan
+            ls -la
+            terraform apply ./tfplan
