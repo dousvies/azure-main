@@ -4,11 +4,22 @@ trigger:
     include:
     - '*'
   branches:
-    exclude:
-    - '*'
+    include:
+    - 'main'
 pool: selfhostedlinux
 variables:
-- group: ci-auth
+  - group: ci-auth
+  - name: isMain
+    value: ${{ eq(variables['Build.SourceBranch'], 'refs/heads/main') }}
+  - name: isTag
+    value: ${{ startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}
+  - name: isFork
+    value: ${{ eq(variables['System.PullRequest.IsFork'], 'True') }}
+  - name: isPR
+    value: ${{ eq(variables['Build.Reason'], 'PullRequest') }}
+  - name: isScheduled
+    value: ${{ eq(variables['Build.Reason'], 'Schedule') }}
+
 stages:
 - stage: Plan
   jobs:
@@ -16,10 +27,28 @@ stages:
       displayName: Plan Infrastructure
       container: dousvies/ci-terraform:azure
       steps:
-      - bash: |
-          export ARM_CLIENT_ID=$(client_id)
-          export ARM_CLIENT_SECRET=$(client_secret)
-          export ARM_SUBSCRIPTION_ID=$(subscription_id)
-          export ARM_TENANT_ID=$(tenant_id)
-          terraform init
-          terraform plan -out=tfplan
+        - bash: |
+            export ARM_CLIENT_ID=$(client_id)
+            export ARM_CLIENT_SECRET=$(client_secret)
+            export ARM_SUBSCRIPTION_ID=$(subscription_id)
+            export ARM_TENANT_ID=$(tenant_id)
+            terraform init
+            terraform plan -out=tfplan
+        - publish: $(System.DefaultWorkingDirectory)/tfplan
+          artifact: tfplan
+- stage: Apply
+  jobs:
+    - job: apply
+      displayName: Apply Infrastructure
+      container: dousvies/ci-terraform:azure
+      condition: eq(variables.isTag, 'True')
+      steps:
+        - download: current
+          artifact: tfplan
+        - bash: |
+            export ARM_CLIENT_ID=$(client_id)
+            export ARM_CLIENT_SECRET=$(client_secret)
+            export ARM_SUBSCRIPTION_ID=$(subscription_id)
+            export ARM_TENANT_ID=$(tenant_id)
+            terraform init
+            terraform apply tfplan
